@@ -1,0 +1,57 @@
+## Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+## Rider
+.idea/
+*.sln.iml
+
+## Visual Studio
+.vs/
+*.user
+*.suo
+*.sdf
+*.cache
+*.dbmdl
+*.VC.db
+
+## Build results
+[Bb]in/
+[Oo]bj/
+*.exe
+*.pdb
+*.appx
+*.appxbundle
+*.msix
+*.msixbundle
+
+## NuGet
+*.nupkg
+*.snupkg
+.nuget/
+packages/
+project.lock.json
+project.fragment.lock.json
+*.nuspec
+
+## Logs
+*.log
+
+## Others
+_ReSharper*/
+*.DotSettings.user
+*.csproj.user
+*.aps
+*.ncb
+*.opendb
+
+# User-specific files
+*.userprefs
+
+# Temporary files
+*.tmp
+*.bak
+*.old
+*.orig
+*.swp
