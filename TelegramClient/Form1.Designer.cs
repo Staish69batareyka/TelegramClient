@@ -9,6 +9,8 @@ partial class Form1
             this.btnStartAuth = new Button();
             this.txtCode = new TextBox();
             this.btnFinishAuth = new Button();
+            this.txtPassword = new TextBox();
+            this.btnPassword = new Button();
             this.lstChats = new ListBox();
             this.txtMessage = new TextBox();
             this.btnSend = new Button();
@@ -35,6 +37,23 @@ partial class Form1
             this.btnFinishAuth.Size = new System.Drawing.Size(150, 30);
             this.btnFinishAuth.Text = "Подтвердить код";
             this.btnFinishAuth.Click += new EventHandler(this.btnFinishAuth_Click);
+            
+            // txtPassword
+            this.txtPassword = new TextBox();
+            this.txtPassword.Location = new System.Drawing.Point(10, 280);
+            this.txtPassword.Size = new System.Drawing.Size(200, 30);
+            this.txtPassword.PlaceholderText = "Пароль (если требуется)";
+            this.txtPassword.UseSystemPasswordChar = true;
+            this.txtPassword.Visible = false;
+            
+
+            // btnPassword
+            this.btnPassword = new Button();
+            this.btnPassword.Location = new System.Drawing.Point(220, 280);
+            this.btnPassword.Size = new System.Drawing.Size(150, 30);
+            this.btnPassword.Text = "Отправить пароль";
+            this.btnPassword.Click += new EventHandler(this.btnPassword_Click);
+            this.btnPassword.Visible = false;
 
             // lstChats
             this.lstChats.Location = new System.Drawing.Point(10, 70);
@@ -59,13 +78,15 @@ partial class Form1
 
             // Form1
             this.AutoScaleMode = AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(600, 280);
+            this.ClientSize = new System.Drawing.Size(600, 320);
             this.Text = "Telegram Client";
 
             this.Controls.Add(this.txtPhone);
             this.Controls.Add(this.btnStartAuth);
             this.Controls.Add(this.txtCode);
             this.Controls.Add(this.btnFinishAuth);
+            this.Controls.Add(this.txtPassword);
+            this.Controls.Add(this.btnPassword);
             this.Controls.Add(this.lstChats);
             this.Controls.Add(this.txtHistory);
             this.Controls.Add(this.txtMessage);

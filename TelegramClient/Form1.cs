@@ -28,20 +28,26 @@ namespace TelegramClient
             InitializeComponent();
             _tg = new Client();
             _tg.AuthCodeNeeded += () => MessageBox.Show("Введите код");
-            _tg.PasswordNeeded += () => MessageBox.Show("Требуется пароль");
+            _tg.PasswordNeeded += () =>
+            {
+                txtPassword.Enabled = true;
+                btnPassword.Enabled = true;
+                txtPassword.Visible = true;
+                btnPassword.Visible = true;
+                MessageBox.Show("Введите пароль (2FA)");
+            };
             _tg.Ready += async () =>
             {
                 MessageBox.Show("Успешная авторизация!");
                 _chats = await _tg.GetChatsAsync();
-
                 lstChats.Items.Clear();
                 foreach (var chat in _chats)
                 {
-                    lstChats.Items.Add($"{chat.Id}: {chat.Title}");
+                    lstChats.Items.Add($"{chat.Title}");
                 }
                 
             };
-            
+            lstChats.SelectedIndexChanged += lstChats_SelectedIndexChanged;
             
         }
 
@@ -61,19 +67,24 @@ namespace TelegramClient
         
         private async void btnPassword_Click(object sender, EventArgs e)
         {
-            string code = txtPassword.Text.Trim();
-            await _tg.SubmitCodeAsync(code);
+            string password = txtPassword.Text.Trim();
+            await _tg.SubmitPasswordAsync(password);
         }
 
         private async void btnSend_Click(object sender, EventArgs e)
         {
             string message = txtMessage.Text.Trim();
-            if (_selectedChat == null || string.IsNullOrEmpty(message)) return;
+            if (_selectedChat == null || string.IsNullOrEmpty(message))
+            {
+                MessageBox.Show("Выберите чат и введите сообщение.");
+                return;
+            }
 
             await _tg.SendMessageAsync(_selectedChat.Id, message);
             txtHistory.AppendText("Вы: " + message + Environment.NewLine);
             txtMessage.Clear();
         }
+
         
         
         // Выбор чата из списка
