@@ -15,6 +15,9 @@ namespace TelegramClient
         private Button btnStartAuth;
         private TextBox txtCode;
         private Button btnFinishAuth;
+        private TextBox txtPassword;
+        private Button btnPassword;
+        
         private ListBox lstChats;
         private TextBox txtMessage;
         private Button btnSend;
@@ -43,7 +46,7 @@ namespace TelegramClient
         }
 
        
-
+        // Кнопки
         private async void btnStartAuth_Click(object sender, EventArgs e)
         {
             string phone = txtPhone.Text.Trim();
@@ -53,6 +56,12 @@ namespace TelegramClient
         private async void btnFinishAuth_Click(object sender, EventArgs e)
         {
             string code = txtCode.Text.Trim();
+            await _tg.SubmitCodeAsync(code);
+        }
+        
+        private async void btnPassword_Click(object sender, EventArgs e)
+        {
+            string code = txtPassword.Text.Trim();
             await _tg.SubmitCodeAsync(code);
         }
 
@@ -66,6 +75,8 @@ namespace TelegramClient
             txtMessage.Clear();
         }
         
+        
+        // Выбор чата из списка
         private void lstChats_SelectedIndexChanged(object sender, EventArgs e)
         {
             int index = lstChats.SelectedIndex;

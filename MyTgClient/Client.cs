@@ -5,8 +5,7 @@ namespace MyTgClient;
 
 public class Client
 {
-     private TdClient _client = new();
-    private bool _isReady;
+    private TdClient _client = new();
     private TdApi.AuthorizationState _authState;
 
     public event Action? AuthCodeNeeded;
@@ -73,7 +72,6 @@ public class Client
                         break;
 
                     case TdApi.AuthorizationState.AuthorizationStateReady:
-                        _isReady = true;
                         Ready?.Invoke();
                         break;
                 }
@@ -114,15 +112,5 @@ public class Client
                 Text = new TdApi.FormattedText { Text = text }
             }
         });
-    }
-
-    public async Task RunAsync()
-    {
-        await InitializeAsync();
-    }
-
-    private async Task InitializeAsync()
-    {
-        throw new NotImplementedException();
     }
 }
