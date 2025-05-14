@@ -23,6 +23,12 @@ namespace TelegramClient
         private Button btnSend;
         private TextBox txtHistory;
 
+        private Task InvokeAsync(Func<Task> func)
+        {
+            return InvokeRequired
+                ? Invoke(func)
+                : func();
+        }
         public Form1()
         {
             InitializeComponent();
@@ -48,7 +54,43 @@ namespace TelegramClient
                 
             };
             lstChats.SelectedIndexChanged += lstChats_SelectedIndexChanged;
+            _tg.NewMessageReceived += async message =>
+            {
+                // Если это сообщение текущего чата — обновим историю
+                if (_selectedChat != null && message.ChatId == _selectedChat.Id)
+                {
+                    await InvokeAsync(async () =>
+                    {
+                        await LoadChatHistoryAsync(_selectedChat.Id);
+                    });
+                }
+            };
             
+        }
+        
+        // Функция прогрузки истории
+        
+        private async Task LoadChatHistoryAsync(long chatId, long fromMessageId = 0, int limit = 50)
+        {
+            var history = await _tg.GetChatHistoryAsync(chatId, fromMessageId, limit);
+
+            if (history == null) return;
+
+            txtHistory.Clear();
+            
+
+            // Сообщения идут в обратном порядке, от старых к новым
+            foreach (var msg in history.Reverse())
+            {
+                if (msg.Content is TdApi.MessageContent.MessageText text)
+                {
+                    string sender = msg.SenderId is TdApi.MessageSender.MessageSenderUser user
+                        ? $"User {user.UserId}"
+                        : "System";
+
+                    txtHistory.AppendText($"{sender}: {text.Text.Text}\r\n");
+                }
+            }
         }
 
        
@@ -81,20 +123,22 @@ namespace TelegramClient
             }
 
             await _tg.SendMessageAsync(_selectedChat.Id, message);
-            txtHistory.AppendText("Вы: " + message + Environment.NewLine);
             txtMessage.Clear();
         }
-
+        
+        
         
         
         // Выбор чата из списка
-        private void lstChats_SelectedIndexChanged(object sender, EventArgs e)
+        private async void lstChats_SelectedIndexChanged(object sender, EventArgs e)
         {
             int index = lstChats.SelectedIndex;
             if (index >= 0 && index < _chats.Count)
             {
                 _selectedChat = _chats[index];
-                txtHistory.AppendText($"Выбран чат: {_selectedChat.Title}\n");
+                txtHistory.Clear();
+                _tg.SetCurrentChatId(_selectedChat.Id); 
+                await LoadChatHistoryAsync(_selectedChat.Id);
             }
         }
 

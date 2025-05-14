@@ -7,10 +7,14 @@ public class Client
 {
     private TdClient _client = new();
     private TdApi.AuthorizationState _authState;
+    private long _currentChatId;
+    private bool _authorized = false;
+    private string? _phoneNumber;
 
     public event Action? AuthCodeNeeded;
     public event Action? PasswordNeeded;
     public event Action? Ready;
+    public event Action<TdApi.Message>? NewMessageReceived;
 
     public Client()
     {
@@ -19,6 +23,8 @@ public class Client
 
     public async Task StartAsync(string phone)
     {
+        _phoneNumber = phone;
+
         await _client.ExecuteAsync(new TdApi.SetTdlibParameters
         {
             ApiId = 23613057,
@@ -32,10 +38,59 @@ public class Client
             DatabaseDirectory = "tdlib_db"
         });
 
-        await _client.ExecuteAsync(new TdApi.SetAuthenticationPhoneNumber
+        await _client.ExecuteAsync(new TdApi.SetDatabaseEncryptionKey
         {
-            PhoneNumber = phone
+            NewEncryptionKey = new byte[] { } 
         });
+    }
+
+    private async Task OnUpdate(TdApi.Update update)
+    {
+        switch (update)
+        {
+            case TdApi.Update.UpdateAuthorizationState state:
+                _authState = state.AuthorizationState;
+
+                switch (_authState)
+                {
+                    case TdApi.AuthorizationState.AuthorizationStateWaitPhoneNumber:
+                        if (!string.IsNullOrEmpty(_phoneNumber))
+                        {
+                            await _client.ExecuteAsync(new TdApi.SetAuthenticationPhoneNumber
+                            {
+                                PhoneNumber = _phoneNumber
+                            });
+                        }
+                        break;
+
+                    case TdApi.AuthorizationState.AuthorizationStateWaitCode:
+                        AuthCodeNeeded?.Invoke();
+                        break;
+
+                    case TdApi.AuthorizationState.AuthorizationStateWaitPassword:
+                        PasswordNeeded?.Invoke();
+                        break;
+
+                    case TdApi.AuthorizationState.AuthorizationStateReady:
+                        Ready?.Invoke();
+                        _authorized = true;
+                        break;
+                }
+
+                break;
+
+            case TdApi.Update.UpdateNewMessage newMessage:
+                if (_authorized && newMessage.Message.ChatId == _currentChatId)
+                {
+                    NewMessageReceived?.Invoke(newMessage.Message);
+                }
+                break;
+        }
+    }
+
+    public void SetCurrentChatId(long chatId)
+    {
+        _currentChatId = chatId;
     }
 
     public async Task SubmitCodeAsync(string code)
@@ -52,32 +107,6 @@ public class Client
         {
             Password = password
         });
-    }
-
-    private async Task OnUpdate(TdApi.Update update)
-    {
-        switch (update)
-        {
-            case TdApi.Update.UpdateAuthorizationState state:
-                _authState = state.AuthorizationState;
-
-                switch (_authState)
-                {
-                    case TdApi.AuthorizationState.AuthorizationStateWaitCode:
-                        AuthCodeNeeded?.Invoke();
-                        break;
-
-                    case TdApi.AuthorizationState.AuthorizationStateWaitPassword:
-                        PasswordNeeded?.Invoke();
-                        break;
-
-                    case TdApi.AuthorizationState.AuthorizationStateReady:
-                        Ready?.Invoke();
-                        break;
-                }
-
-                break;
-        }
     }
 
     public async Task<List<TdApi.Chat>> GetChatsAsync(int limit = 20)
@@ -112,5 +141,19 @@ public class Client
                 Text = new TdApi.FormattedText { Text = text }
             }
         });
+    }
+
+    public async Task<TdApi.Message[]> GetChatHistoryAsync(long chatId, long fromMessageId = 0, int limit = 50)
+    {
+        var response = await _client.ExecuteAsync(new TdApi.GetChatHistory
+        {
+            ChatId = chatId,
+            FromMessageId = fromMessageId,
+            Limit = limit,
+            Offset = 0,
+            OnlyLocal = false
+        });
+
+        return (response as TdApi.Messages)?.Messages_ ?? Array.Empty<TdApi.Message>();
     }
 }
