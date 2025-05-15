@@ -110,14 +110,25 @@ public partial class Form1 : Form
     // Подгрузка чатов
     private async Task LoadChatsAsync()
     {
-        var chats = await _tg.GetChatsAsync();
-
-        _chats = chats;
-        _lstChats!.Items.Clear();
-
-        foreach (var chat in _chats)
+        try
         {
-            _lstChats.Items.Add(chat.Title);
+            var chats = await _tg.GetChatsAsync();
+            if (chats.Count == 0)
+            {
+                MessageBox.Show("Чаты не найдены или не загружены.");
+                return;
+            }
+
+            _chats = chats;
+            _lstChats!.Items.Clear();
+            foreach (var chat in _chats)
+            {
+                _lstChats.Items.Add(chat.Title);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Ошибка загрузки чатов: {ex.Message}");
         }
     }
 
@@ -189,6 +200,8 @@ public partial class Form1 : Form
     // Выбор чата из списка
     private async void lstChats_SelectedIndexChanged(object? sender, EventArgs e)
     {
+        if (_lstChats!.SelectedIndices.Count == 0) return;
+        
         int index = _lstChats!.SelectedIndices[0];
 
         if (index >= 0 && index < _chats.Count)
