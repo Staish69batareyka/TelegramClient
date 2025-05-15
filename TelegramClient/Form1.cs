@@ -22,8 +22,17 @@ public partial class Form1 : Form
     {
         InitializeComponent();
         _tg = client;
-
         _lstChats!.SelectedIndexChanged += lstChats_SelectedIndexChanged;
+        
+        // Обработка ошибок получения чата
+        try
+        {
+            LoadChatsAsync().ConfigureAwait(false); // Запуск без блокировки UI
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"Не удалось загрузить чаты: {ex.Message}");
+        }
 
         // Реализация подписки на историю и уведомления
         _tg.NewMessageReceived += async message =>
