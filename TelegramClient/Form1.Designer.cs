@@ -8,6 +8,7 @@ private void InitializeComponent()
     this._lstChats = new ListView();
     this._txtMessage = new TextBox();
     this._btnSend = new Button();
+    this._btnSendFile = new Button();
     this._txtHistory = new TextBox();
     this._notifyIcon = new System.Windows.Forms.NotifyIcon();
     this._progressBar = new ProgressBar();
@@ -38,7 +39,7 @@ private void InitializeComponent()
 
     // Form1
     this.AutoScaleMode = AutoScaleMode.Font;
-    this.ClientSize = new Size(700, 450);
+    this.ClientSize = new Size(800, 450);
     this.Text = "Telegram Client";
     this.BackColor = telegramGray;
     this.Font = font;
@@ -58,7 +59,7 @@ private void InitializeComponent()
 
     // _txtHistory
     this._txtHistory.Location = new Point(190, 20);
-    this._txtHistory.Size = new Size(480, 360);
+    this._txtHistory.Size = new Size(600, 360);
     this._txtHistory.Multiline = true;
     this._txtHistory.ReadOnly = true;
     this._txtHistory.ScrollBars = ScrollBars.Vertical;
@@ -78,6 +79,15 @@ private void InitializeComponent()
     this._btnSend.ForeColor = Color.White;
     this._btnSend.FlatStyle = FlatStyle.Flat;
     this._btnSend.Click += new EventHandler(this.btnSend_Click);
+    
+    // _btnSendFile
+    this._btnSendFile.Location = new Point(670, 390);
+    this._btnSendFile.Size = new Size(90, 30);
+    this._btnSendFile.Text = "файл";
+    this._btnSendFile.BackColor = telegramBlue;
+    this._btnSendFile.ForeColor = Color.White;
+    this._btnSendFile.FlatStyle = FlatStyle.Flat;
+    this._btnSendFile.Click += new EventHandler(this.btnSendFile_Click);
 
     // Добавление контролов
 
@@ -85,6 +95,7 @@ private void InitializeComponent()
     this.Controls.Add(this._txtHistory);
     this.Controls.Add(this._txtMessage);
     this.Controls.Add(this._btnSend);
+    this.Controls.Add(this._btnSendFile);
 }
 
 

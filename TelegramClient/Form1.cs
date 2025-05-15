@@ -17,6 +17,7 @@ public partial class Form1 : Form
     private TextBox? _txtHistory;
     private NotifyIcon? _notifyIcon;
     private ProgressBar? _progressBar;
+    private Button _btnSendFile;
 
     public Form1(Client client)
     {
@@ -172,7 +173,7 @@ public partial class Form1 : Form
 
 
     // Функция прогрузки истории
-    private async Task LoadChatHistoryAsync(long chatId, long fromMessageId = 0, int limit = 50)
+    private async Task LoadChatHistoryAsync(long chatId)
     {
         var history = await _tg.GetChatHistoryAsync(chatId);
         
@@ -204,6 +205,37 @@ public partial class Form1 : Form
         await _tg.SendMessageAsync(_selectedChat.Id, message);
         _txtMessage.Clear();
     }
+    
+    private async void btnSendFile_Click(object sender, EventArgs e)
+    {
+        using (OpenFileDialog openFileDialog = new OpenFileDialog())
+        {
+            openFileDialog.Title = "Выберите файл для отправки";
+            openFileDialog.Filter = "Все файлы (*.*)|*.*";
+            openFileDialog.Multiselect = false;
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string filePath = openFileDialog.FileName;
+
+                try
+                {
+                    int index = _lstChats!.SelectedIndices[0];
+                    if (index >= 0 && index < _chats.Count)
+                    {
+                        _ = _tg.SendFileAsync(_chats[index].Id,filePath);
+                        MessageBox.Show("Файл отправлен!");
+                    }
+                   
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при отправке файла: {ex.Message}");
+                }
+            }
+        }
+    }
+
 
 
     // Выбор чата из списка

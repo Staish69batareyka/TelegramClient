@@ -1,5 +1,4 @@
 ﻿using MyTgClient;
-using TdLib;
 
 namespace TelegramClient;
 
@@ -8,32 +7,60 @@ public partial class AuthorizForm : Form
         private Client _tg;
         public Client Client => _tg;
         
-        private TextBox _txtPhone;
-        private Button _btnStartAuth;
-        private TextBox _txtCode;
-        private Button _btnFinishAuth;
-        private TextBox _txtPassword;
-        private Button _btnPassword;
+        private TextBox? _txtPhone;
+        private Button? _btnStartAuth;
+        private TextBox? _txtCode;
+        private Button? _btnFinishAuth;
+        private TextBox? _txtPassword;
+        private Button? _btnPassword;
 
         public AuthorizForm()
         {
             InitializeComponent();
             
             _tg = new Client();
-            _tg.AuthCodeNeeded += () => MessageBox.Show("Введите код");
+            _tg.AuthCodeNeeded += () =>
+            {
+                try
+                {
+                    MessageBox.Show("Введите код");
+                }
+                catch
+                {
+                    MessageBox.Show("<UNK> <UNK> <UNK>");
+                }
+
+            };
             _tg.PasswordNeeded += () =>
             {
-                _txtPassword!.Enabled = true;
-                _btnPassword!.Enabled = true;
-                _txtPassword.Visible = true;
-                _btnPassword.Visible = true;
-                MessageBox.Show("Введите пароль (2FA)");
+                try
+                {
+                    Invoke(() =>
+                    {
+                        _txtPassword!.Enabled = true;
+                        _btnPassword!.Enabled = true;
+                        _txtPassword.Visible = true;
+                        _btnPassword.Visible = true;
+                        MessageBox.Show("Введите пароль (2FA)");
+                    });
+                }
+                catch
+                {
+                    MessageBox.Show("<UNK> <UNK> <UNK>");
+                }
             };
-            _tg.Ready += async () =>
+            _tg.Ready += () =>
             {
-                MessageBox.Show("Успешная авторизация!");
-                DialogResult = DialogResult.OK;
-                Close();
+                try
+                {
+                    MessageBox.Show("Успешная авторизация!");
+                    DialogResult = DialogResult.OK;
+                    Close();
+                }
+                catch
+                {
+                    MessageBox.Show("<UNK> <UNK> <UNK>");
+                }
             };
             
         }
@@ -41,14 +68,14 @@ public partial class AuthorizForm : Form
         // Кнопка подтверждения телефона
         private async void btnStartAuth_Click(object sender, EventArgs e)
         {
-            string phone = _txtPhone.Text.Trim();
+            string phone = _txtPhone!.Text.Trim();
             await _tg.StartAsync(phone);
         }
 
         // кнопка подтверждения кода подтверждения
         private async void btnFinishAuth_Click(object sender, EventArgs e)
         {
-            string code = _txtCode.Text.Trim();
+            string code = _txtCode!.Text.Trim();
             if (string.IsNullOrEmpty(code))
             {
                 MessageBox.Show("Введите код подтверждения.");
@@ -68,7 +95,7 @@ public partial class AuthorizForm : Form
         // Кнопка подтверждения пароля
         private async void btnPassword_Click(object sender, EventArgs e)
         {
-            string password = _txtPassword.Text.Trim();
+            string password = _txtPassword!.Text.Trim();
             
             if (string.IsNullOrEmpty(password))
             {

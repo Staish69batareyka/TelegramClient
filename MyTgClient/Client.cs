@@ -1,15 +1,14 @@
 ﻿using TdLib;
-using TdLib.Bindings;
 
 namespace MyTgClient;
 
 public class Client
 {
-    private const int ApiId = int.MaxValue; //TODO: В начале работы написать свой API ID
-    private const string ApiHash = ""; // TODO: Написать свой API Hash
+    private const int ApiId = 23613057; //TODO: В начале работы написать свой API ID
+    private const string ApiHash = "a0fc7ea7c76b14a6af35f854bf85ac8a"; // TODO: Написать свой API Hash
 
     private TdClient _client = new();
-    private TdApi.AuthorizationState _authState;
+    private TdApi.AuthorizationState? _authState;
     private long _currentChatId;
     private bool _authorized;
     private string? _phoneNumber;
@@ -75,6 +74,7 @@ public class Client
                         break;
 
                     case TdApi.AuthorizationState.AuthorizationStateWaitPassword:
+                        
                         PasswordNeeded?.Invoke();
                         break;
 
@@ -184,8 +184,9 @@ public class Client
         var allMessages = new List<TdApi.Message>();
         long fromMessageId = 0;
         const int batchSize = 100;
+        const int maxMessages = 200;
 
-        while (true)
+        while (allMessages.Count < maxMessages)
         {
             var response = await _client.ExecuteAsync(new TdApi.GetChatHistory
             {
