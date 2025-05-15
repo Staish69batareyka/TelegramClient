@@ -11,19 +11,19 @@ public partial class Form1 : Form
     private TdApi.Chat? _selectedChat;
 
 
-    private ListView _lstChats;
-    private TextBox _txtMessage;
-    private Button _btnSend;
-    private TextBox _txtHistory;
-    private NotifyIcon _notifyIcon;
-    private ProgressBar _progressBar;
+    private ListView? _lstChats;
+    private TextBox? _txtMessage;
+    private Button? _btnSend;
+    private TextBox? _txtHistory;
+    private NotifyIcon? _notifyIcon;
+    private ProgressBar? _progressBar;
 
     public Form1(Client client)
     {
         InitializeComponent();
         _tg = client;
 
-        _lstChats.SelectedIndexChanged += lstChats_SelectedIndexChanged;
+        _lstChats!.SelectedIndexChanged += lstChats_SelectedIndexChanged;
 
         // Реализация подписки на историю и уведомления
         _tg.NewMessageReceived += async message =>
@@ -61,7 +61,7 @@ public partial class Form1 : Form
             }
         };
 
-        LoadChatsAsync();
+        _ = LoadChatsAsync();
     }
 
 
@@ -85,7 +85,7 @@ public partial class Form1 : Form
         {
             var tcs = new TaskCompletionSource<object?>();
 
-            BeginInvoke(async () =>
+            BeginInvoke(async void () =>
             {
                 try
                 {
@@ -111,10 +111,9 @@ public partial class Form1 : Form
     private async Task LoadChatsAsync()
     {
         var chats = await _tg.GetChatsAsync();
-        if (chats == null) return;
 
         _chats = chats;
-        _lstChats.Items.Clear();
+        _lstChats!.Items.Clear();
 
         foreach (var chat in _chats)
         {
@@ -125,7 +124,7 @@ public partial class Form1 : Form
     // Очистка NotifyIcon при закрытии формы
     protected override void OnFormClosed(FormClosedEventArgs e)
     {
-        _notifyIcon.Dispose();
+        _notifyIcon!.Dispose();
         base.OnFormClosed(e);
     }
 
@@ -156,10 +155,8 @@ public partial class Form1 : Form
     private async Task LoadChatHistoryAsync(long chatId, long fromMessageId = 0, int limit = 50)
     {
         var history = await _tg.GetChatHistoryAsync(chatId, fromMessageId, limit);
-
-        if (history == null) return;
-
-        _txtHistory.Clear();
+        
+        _txtHistory!.Clear();
 
         // Сообщения идут в обратном порядке, от старых к новым
         foreach (var msg in history.Reverse())
@@ -177,7 +174,7 @@ public partial class Form1 : Form
     // Кнопка отправления сообщения
     private async void btnSend_Click(object sender, EventArgs e)
     {
-        string message = _txtMessage.Text.Trim();
+        string message = _txtMessage!.Text.Trim();
         if (_selectedChat == null || string.IsNullOrEmpty(message))
         {
             MessageBox.Show("Выберите чат и введите сообщение.");
@@ -190,14 +187,14 @@ public partial class Form1 : Form
 
 
     // Выбор чата из списка
-    private async void lstChats_SelectedIndexChanged(object sender, EventArgs e)
+    private async void lstChats_SelectedIndexChanged(object? sender, EventArgs e)
     {
-        int index = _lstChats.SelectedIndices[0];
+        int index = _lstChats!.SelectedIndices[0];
 
         if (index >= 0 && index < _chats.Count)
         {
             _selectedChat = _chats[index];
-            _txtHistory.Clear();
+            _txtHistory!.Clear();
             _tg.SetCurrentChatId(_selectedChat.Id);
             await LoadChatHistoryAsync(_selectedChat.Id);
         }
@@ -214,12 +211,12 @@ public partial class Form1 : Form
 
     private void ShowUploadProgress()
     {
-        _progressBar.Visible = true;
+        _progressBar!.Visible = true;
     }
 
     private void HideUploadProgress()
     {
-        _progressBar.Visible = false;
+        _progressBar!.Visible = false;
     }
 
     private async void Form1_DragDrop(object sender, DragEventArgs e)
@@ -227,13 +224,13 @@ public partial class Form1 : Form
         if (e.Data == null)
             return;
 
-        string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+        string[] files = (string[])e.Data.GetData(DataFormats.FileDrop)!;
         if (files.Length > 0)
         {
             string filePath = files[0]; // можно расширить до нескольких
             ShowUploadProgress(); //  отображаем прогресс
 
-            int index = _lstChats.SelectedIndices[0];
+            int index = _lstChats!.SelectedIndices[0];
             if (index >= 0 && index < _chats.Count)
             {
                 _selectedChat = _chats[index];

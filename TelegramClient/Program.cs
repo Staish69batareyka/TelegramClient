@@ -8,14 +8,12 @@ static class Program
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
 
-        using (var loginForm = new AuthorizForm())
-        {
-            var result = loginForm.ShowDialog();
+        using var loginForm = new AuthorizForm();
+        var result = loginForm.ShowDialog();
 
-            if (result == DialogResult.OK)
-            {
-                Application.Run(new Form1(loginForm.Client)); // передаём авторизованный Client
-            }
+        if (result == DialogResult.OK)
+        {
+            Application.Run(new Form1(loginForm.Client)); // передаём авторизованный Client
         }
     }
 }

@@ -4,13 +4,13 @@ namespace MyTgClient;
 
 public class Client
 {
-    private const int ApiId = int.MaxValue; //  В начале работы написать свой API ID
-    private const string ApiHash = ""; // Написать свой API Hash
+    private const int ApiId = 23613057;//int.MaxValue; //  В начале работы написать свой API ID
+    private const string ApiHash = "a0fc7ea7c76b14a6af35f854bf85ac8a"; // Написать свой API Hash
 
     private TdClient _client = new();
     private TdApi.AuthorizationState _authState;
     private long _currentChatId;
-    private bool _authorized = false;
+    private bool _authorized;
     private string? _phoneNumber;
 
     public event Action? AuthCodeNeeded;
