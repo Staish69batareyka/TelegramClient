@@ -184,20 +184,17 @@ namespace TelegramClient
             // Сообщения идут в обратном порядке, от старых к новым
             foreach (var msg in history.Reverse())
             {
-                if (msg.Content is TdApi.MessageContent.MessageText text)
-                {
-                    string displayText = FormatMessage(msg);
-                    string sender = msg.SenderId is TdApi.MessageSender.MessageSenderUser user
-                        ? $"User {user.UserId}"
-                        : "System";
+                string displayText = FormatMessage(msg);
+                string sender = msg.SenderId is TdApi.MessageSender.MessageSenderUser user
+                    ? $"User {user.UserId}"
+                    : "System";
 
-                    txtHistory.AppendText($"{sender}: {displayText}\r\n");
-                }
+                txtHistory.AppendText($"{sender}: {displayText}\r\n");
             }
+
         }
-
-
-       
+        
+        
         // Кнопки
         
         // Кнопка подтверждения телефона

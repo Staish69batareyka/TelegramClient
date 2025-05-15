@@ -186,7 +186,4 @@ public class Client
 
         return (response as TdApi.Messages)?.Messages_ ?? Array.Empty<TdApi.Message>();
     }
-    
-    
-    
 }
