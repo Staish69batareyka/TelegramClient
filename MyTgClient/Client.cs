@@ -1,11 +1,12 @@
 ﻿using TdLib;
+using TdLib.Bindings;
 
 namespace MyTgClient;
 
 public class Client
 {
-    private const int ApiId = 23613057;//int.MaxValue; //  В начале работы написать свой API ID
-    private const string ApiHash = "a0fc7ea7c76b14a6af35f854bf85ac8a"; // Написать свой API Hash
+    private const int ApiId = int.MaxValue; //TODO: В начале работы написать свой API ID
+    private const string ApiHash = ""; // TODO: Написать свой API Hash
 
     private TdClient _client = new();
     private TdApi.AuthorizationState _authState;
@@ -20,6 +21,7 @@ public class Client
 
     public Client()
     {
+        _client.Bindings.SetLogVerbosityLevel(0);
         _client.UpdateReceived += async (_, update) => await OnUpdate(update);
     }
 
