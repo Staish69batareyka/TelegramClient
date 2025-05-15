@@ -115,12 +115,13 @@ public class Client
         });
     }
 
-    public async Task<List<TdApi.Chat>> GetChatsAsync(int limit = 20)
+    public async Task<List<TdApi.Chat>> GetChatsAsync(int limit = 10000)
     {
         var result = new List<TdApi.Chat>();
 
         var chats = await _client.ExecuteAsync(new TdApi.GetChats
         {
+            ChatList = new TdApi.ChatList.ChatListMain(),
             Limit = limit
         });
 
@@ -131,9 +132,11 @@ public class Client
                 ChatId = id
             });
 
-            result.Add(chat);
+            if (chat.Type is TdApi.ChatType.ChatTypePrivate)
+            {
+                result.Add(chat);
+            }
         }
-
         return result;
     }
 
@@ -185,6 +188,6 @@ public class Client
             OnlyLocal = false
         });
 
-        return (response as TdApi.Messages)?.Messages_ ?? Array.Empty<TdApi.Message>();
+        return response?.Messages_ ?? Array.Empty<TdApi.Message>();
     }
 }
