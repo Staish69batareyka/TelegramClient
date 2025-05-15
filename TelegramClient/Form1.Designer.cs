@@ -16,7 +16,6 @@ private void InitializeComponent()
     this.btnSend = new Button();
     this.txtHistory = new TextBox();
     this.notifyIcon = new System.Windows.Forms.NotifyIcon();
-    this.testButton = new Button();
 
     var telegramBlue = Color.FromArgb(42, 171, 238);
     var telegramGray = Color.FromArgb(245, 245, 245);
