@@ -49,9 +49,12 @@ private void InitializeComponent()
     this._lstChats.Location = new Point(20, 20);
     this._lstChats.Size = new Size(160, 395);
     this._lstChats.BorderStyle = BorderStyle.FixedSingle;
-    this._lstChats.View = View.List;
+    this._lstChats.View = View.Details;
+    this._lstChats.Columns.Clear();
+    this._lstChats.Columns.Add("Chat", this._lstChats.Width - 5);
     this._lstChats.FullRowSelect = true;
     this._lstChats.Scrollable = true;
+   
 
     // _txtHistory
     this._txtHistory.Location = new Point(190, 20);

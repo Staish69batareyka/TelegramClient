@@ -174,12 +174,12 @@ public partial class Form1 : Form
     // Функция прогрузки истории
     private async Task LoadChatHistoryAsync(long chatId, long fromMessageId = 0, int limit = 50)
     {
-        var history = await _tg.GetChatHistoryAsync(chatId, fromMessageId, limit);
+        var history = await _tg.GetChatHistoryAsync(chatId);
         
         _txtHistory!.Clear();
 
         // Сообщения идут в обратном порядке, от старых к новым
-        foreach (var msg in history.Reverse())
+        foreach (var msg in history.AsEnumerable().Reverse())
         {
             string displayText = FormatMessage(msg);
             string sender = msg.SenderId is TdApi.MessageSender.MessageSenderUser user

@@ -177,17 +177,36 @@ public class Client
     }
 
 
-    public async Task<TdApi.Message[]> GetChatHistoryAsync(long chatId, long fromMessageId = 0, int limit = 50)
+    public async Task<List<TdApi.Message>> GetChatHistoryAsync(long chatId)
     {
-        var response = await _client.ExecuteAsync(new TdApi.GetChatHistory
-        {
-            ChatId = chatId,
-            FromMessageId = fromMessageId,
-            Limit = limit,
-            Offset = 0,
-            OnlyLocal = false
-        });
+        var allMessages = new List<TdApi.Message>();
+        long fromMessageId = 0;
+        const int batchSize = 100;
 
-        return response?.Messages_ ?? Array.Empty<TdApi.Message>();
+        while (true)
+        {
+            var response = await _client.ExecuteAsync(new TdApi.GetChatHistory
+            {
+                ChatId = chatId,
+                FromMessageId = fromMessageId,
+                Offset = 0,
+                Limit = batchSize,
+                OnlyLocal = false
+            });
+
+            var messages = response?.Messages_ ?? Array.Empty<TdApi.Message>();
+
+            if (messages.Length == 0)
+                break;
+
+            allMessages.AddRange(messages);
+
+            if (messages.Length < batchSize)
+                break;
+
+            fromMessageId = messages.Last().Id;
+        }
+
+        return allMessages;
     }
 }
