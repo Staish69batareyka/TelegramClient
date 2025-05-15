@@ -6,64 +6,64 @@ partial class AuthorizForm
 {
     private void InitializeComponent()
     {
-        this.txtPhone = new TextBox();
-        this.btnStartAuth = new Button();
-        this.txtCode = new TextBox();
-        this.btnFinishAuth = new Button();
-        this.txtPassword = new TextBox();
-        this.btnPassword = new Button();
+        this._txtPhone = new TextBox();
+        this._btnStartAuth = new Button();
+        this._txtCode = new TextBox();
+        this._btnFinishAuth = new Button();
+        this._txtPassword = new TextBox();
+        this._btnPassword = new Button();
 
         var telegramBlue = Color.FromArgb(42, 171, 238);
         var telegramGray = Color.FromArgb(245, 245, 245);
         var font = new Font("Segoe UI", 10F);
 
         // txtPhone
-        this.txtPhone.Location = new Point(20, 20);
-        this.txtPhone.Size = new Size(220, 30);
-        this.txtPhone.PlaceholderText = "Номер телефона";
-        this.txtPhone.BorderStyle = BorderStyle.FixedSingle;
+        this._txtPhone.Location = new Point(20, 20);
+        this._txtPhone.Size = new Size(220, 30);
+        this._txtPhone.PlaceholderText = "Номер телефона";
+        this._txtPhone.BorderStyle = BorderStyle.FixedSingle;
 
         // btnStartAuth
-        this.btnStartAuth.Location = new Point(250, 20);
-        this.btnStartAuth.Size = new Size(180, 30);
-        this.btnStartAuth.Text = "Подтвердить номер";
-        this.btnStartAuth.BackColor = telegramBlue;
-        this.btnStartAuth.ForeColor = Color.White;
-        this.btnStartAuth.FlatStyle = FlatStyle.Flat;
-        this.btnStartAuth.Click += new EventHandler(this.btnStartAuth_Click);
+        this._btnStartAuth.Location = new Point(250, 20);
+        this._btnStartAuth.Size = new Size(180, 30);
+        this._btnStartAuth.Text = "Подтвердить номер";
+        this._btnStartAuth.BackColor = telegramBlue;
+        this._btnStartAuth.ForeColor = Color.White;
+        this._btnStartAuth.FlatStyle = FlatStyle.Flat;
+        this._btnStartAuth.Click += new EventHandler(this.btnStartAuth_Click);
 
         // txtCode
-        this.txtCode.Location = new Point(20, 60);
-        this.txtCode.Size = new Size(220, 30);
-        this.txtCode.PlaceholderText = "Код подтверждения";
-        this.txtCode.BorderStyle = BorderStyle.FixedSingle;
+        this._txtCode.Location = new Point(20, 60);
+        this._txtCode.Size = new Size(220, 30);
+        this._txtCode.PlaceholderText = "Код подтверждения";
+        this._txtCode.BorderStyle = BorderStyle.FixedSingle;
 
         // btnFinishAuth
-        this.btnFinishAuth.Location = new Point(250, 60);
-        this.btnFinishAuth.Size = new Size(180, 30);
-        this.btnFinishAuth.Text = "Подтвердить код";
-        this.btnFinishAuth.BackColor = telegramBlue;
-        this.btnFinishAuth.ForeColor = Color.White;
-        this.btnFinishAuth.FlatStyle = FlatStyle.Flat;
-        this.btnFinishAuth.Click += new EventHandler(this.btnFinishAuth_Click);
+        this._btnFinishAuth.Location = new Point(250, 60);
+        this._btnFinishAuth.Size = new Size(180, 30);
+        this._btnFinishAuth.Text = "Подтвердить код";
+        this._btnFinishAuth.BackColor = telegramBlue;
+        this._btnFinishAuth.ForeColor = Color.White;
+        this._btnFinishAuth.FlatStyle = FlatStyle.Flat;
+        this._btnFinishAuth.Click += new EventHandler(this.btnFinishAuth_Click);
 
         // txtPassword
-        this.txtPassword.Location = new Point(20, 100);
-        this.txtPassword.Size = new Size(220, 30);
-        this.txtPassword.PlaceholderText = "Пароль (если есть)";
-        this.txtPassword.UseSystemPasswordChar = true;
-        this.txtPassword.BorderStyle = BorderStyle.FixedSingle;
-        this.txtPassword.Visible = false;
+        this._txtPassword.Location = new Point(20, 100);
+        this._txtPassword.Size = new Size(220, 30);
+        this._txtPassword.PlaceholderText = "Пароль (если есть)";
+        this._txtPassword.UseSystemPasswordChar = true;
+        this._txtPassword.BorderStyle = BorderStyle.FixedSingle;
+        this._txtPassword.Visible = false;
 
         // btnPassword
-        this.btnPassword.Location = new Point(250, 100);
-        this.btnPassword.Size = new Size(180, 30);
-        this.btnPassword.Text = "Подтвердить пароль";
-        this.btnPassword.BackColor = telegramBlue;
-        this.btnPassword.ForeColor = Color.White;
-        this.btnPassword.FlatStyle = FlatStyle.Flat;
-        this.btnPassword.Click += new EventHandler(this.btnPassword_Click);
-        this.btnPassword.Visible = false;
+        this._btnPassword.Location = new Point(250, 100);
+        this._btnPassword.Size = new Size(180, 30);
+        this._btnPassword.Text = "Подтвердить пароль";
+        this._btnPassword.BackColor = telegramBlue;
+        this._btnPassword.ForeColor = Color.White;
+        this._btnPassword.FlatStyle = FlatStyle.Flat;
+        this._btnPassword.Click += new EventHandler(this.btnPassword_Click);
+        this._btnPassword.Visible = false;
 
         // AuthorizForm
         this.AutoScaleMode = AutoScaleMode.Font;
@@ -75,11 +75,11 @@ partial class AuthorizForm
         this.MaximizeBox = false;
 
 
-        this.Controls.Add(this.txtPhone);
-        this.Controls.Add(this.btnStartAuth);
-        this.Controls.Add(this.txtCode);
-        this.Controls.Add(this.btnFinishAuth);
-        this.Controls.Add(this.txtPassword);
-        this.Controls.Add(this.btnPassword);
+        this.Controls.Add(this._txtPhone);
+        this.Controls.Add(this._btnStartAuth);
+        this.Controls.Add(this._txtCode);
+        this.Controls.Add(this._btnFinishAuth);
+        this.Controls.Add(this._txtPassword);
+        this.Controls.Add(this._btnPassword);
     }
 }

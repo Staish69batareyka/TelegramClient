@@ -5,12 +5,12 @@ partial class Form1
 {
 private void InitializeComponent()
 {
-    this.lstChats = new ListView();
-    this.txtMessage = new TextBox();
-    this.btnSend = new Button();
-    this.txtHistory = new TextBox();
-    this.notifyIcon = new System.Windows.Forms.NotifyIcon();
-    this.progressBar = new ProgressBar();
+    this._lstChats = new ListView();
+    this._txtMessage = new TextBox();
+    this._btnSend = new Button();
+    this._txtHistory = new TextBox();
+    this._notifyIcon = new System.Windows.Forms.NotifyIcon();
+    this._progressBar = new ProgressBar();
 
     // Стили
     var telegramBlue = Color.FromArgb(42, 171, 238);
@@ -26,15 +26,15 @@ private void InitializeComponent()
     
     //Индикатор процесса загрузки файла
     
-    this.progressBar.Style = ProgressBarStyle.Marquee;
-    this.progressBar.Visible = false;
-    this.progressBar.Dock = DockStyle.Bottom;
-    this.Controls.Add(progressBar);
+    this._progressBar.Style = ProgressBarStyle.Marquee;
+    this._progressBar.Visible = false;
+    this._progressBar.Dock = DockStyle.Bottom;
+    this.Controls.Add(_progressBar);
 
-    // notifyIcon
-    this.notifyIcon.Icon = SystemIcons.Information;
-    this.notifyIcon.Visible = true;
-    this.notifyIcon.Text = "TelegramClient";
+    // _notifyIcon
+    this._notifyIcon.Icon = SystemIcons.Information;
+    this._notifyIcon.Visible = true;
+    this._notifyIcon.Text = "TelegramClient";
 
     // Form1
     this.AutoScaleMode = AutoScaleMode.Font;
@@ -45,43 +45,43 @@ private void InitializeComponent()
     this.FormBorderStyle = FormBorderStyle.FixedSingle;
     this.MaximizeBox = false;
     
-    // lstChats
-    this.lstChats.Location = new Point(20, 20);
-    this.lstChats.Size = new Size(160, 395);
-    this.lstChats.BorderStyle = BorderStyle.FixedSingle;
-    this.lstChats.View = View.List;
-    this.lstChats.FullRowSelect = true;
-    this.lstChats.Scrollable = true;
+    // _lstChats
+    this._lstChats.Location = new Point(20, 20);
+    this._lstChats.Size = new Size(160, 395);
+    this._lstChats.BorderStyle = BorderStyle.FixedSingle;
+    this._lstChats.View = View.List;
+    this._lstChats.FullRowSelect = true;
+    this._lstChats.Scrollable = true;
 
-    // txtHistory
-    this.txtHistory.Location = new Point(190, 20);
-    this.txtHistory.Size = new Size(480, 360);
-    this.txtHistory.Multiline = true;
-    this.txtHistory.ReadOnly = true;
-    this.txtHistory.ScrollBars = ScrollBars.Vertical;
-    this.txtHistory.BackColor = Color.White;
-    this.txtHistory.BorderStyle = BorderStyle.FixedSingle;
+    // _txtHistory
+    this._txtHistory.Location = new Point(190, 20);
+    this._txtHistory.Size = new Size(480, 360);
+    this._txtHistory.Multiline = true;
+    this._txtHistory.ReadOnly = true;
+    this._txtHistory.ScrollBars = ScrollBars.Vertical;
+    this._txtHistory.BackColor = Color.White;
+    this._txtHistory.BorderStyle = BorderStyle.FixedSingle;
 
-    // txtMessage
-    this.txtMessage.Location = new Point(190, 390);
-    this.txtMessage.Size = new Size(380, 30);
-    this.txtMessage.BorderStyle = BorderStyle.FixedSingle;
+    // _txtMessage
+    this._txtMessage.Location = new Point(190, 390);
+    this._txtMessage.Size = new Size(380, 30);
+    this._txtMessage.BorderStyle = BorderStyle.FixedSingle;
 
-    // btnSend
-    this.btnSend.Location = new Point(580, 390);
-    this.btnSend.Size = new Size(90, 30);
-    this.btnSend.Text = "Отправить";
-    this.btnSend.BackColor = telegramBlue;
-    this.btnSend.ForeColor = Color.White;
-    this.btnSend.FlatStyle = FlatStyle.Flat;
-    this.btnSend.Click += new EventHandler(this.btnSend_Click);
+    // _btnSend
+    this._btnSend.Location = new Point(580, 390);
+    this._btnSend.Size = new Size(90, 30);
+    this._btnSend.Text = "Отправить";
+    this._btnSend.BackColor = telegramBlue;
+    this._btnSend.ForeColor = Color.White;
+    this._btnSend.FlatStyle = FlatStyle.Flat;
+    this._btnSend.Click += new EventHandler(this.btnSend_Click);
 
     // Добавление контролов
 
-    this.Controls.Add(this.lstChats);
-    this.Controls.Add(this.txtHistory);
-    this.Controls.Add(this.txtMessage);
-    this.Controls.Add(this.btnSend);
+    this.Controls.Add(this._lstChats);
+    this.Controls.Add(this._txtHistory);
+    this.Controls.Add(this._txtMessage);
+    this.Controls.Add(this._btnSend);
 }
 
 

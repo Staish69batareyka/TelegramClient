@@ -1,10 +1,12 @@
 ﻿using TdLib;
-using TdLib.Bindings;
 
 namespace MyTgClient;
 
 public class Client
 {
+    private const int ApiId = int.MaxValue; //  В начале работы написать свой API ID
+    private const string ApiHash = ""; // Написать свой API Hash
+
     private TdClient _client = new();
     private TdApi.AuthorizationState _authState;
     private long _currentChatId;
@@ -29,10 +31,10 @@ public class Client
         {
             await _client.ExecuteAsync(new TdApi.SetTdlibParameters
             {
-                ApiId = 23613057,
-                ApiHash = "a0fc7ea7c76b14a6af35f854bf85ac8a",
-                SystemLanguageCode = "en", 
-                DeviceModel = "PC", 
+                ApiId = ApiId,
+                ApiHash = ApiHash,
+                SystemLanguageCode = "en",
+                DeviceModel = "PC",
                 ApplicationVersion = "1.0",
                 UseMessageDatabase = true,
                 UseSecretChats = false,
@@ -41,7 +43,7 @@ public class Client
             });
             await _client.ExecuteAsync(new TdApi.SetDatabaseEncryptionKey
             {
-                NewEncryptionKey = new byte[] { } 
+                NewEncryptionKey = new byte[] { }
             });
         });
     }
@@ -63,6 +65,7 @@ public class Client
                                 PhoneNumber = _phoneNumber
                             });
                         }
+
                         break;
 
                     case TdApi.AuthorizationState.AuthorizationStateWaitCode:
@@ -86,6 +89,7 @@ public class Client
                 {
                     NewMessageReceived?.Invoke(newMessage.Message);
                 }
+
                 break;
         }
     }
@@ -144,7 +148,7 @@ public class Client
             }
         });
     }
-   
+
     public async Task SendFileAsync(long chatId, string filePath, string caption = "")
     {
         // Загрузка файла
@@ -169,9 +173,6 @@ public class Client
         });
     }
 
-
-
-    
 
     public async Task<TdApi.Message[]> GetChatHistoryAsync(long chatId, long fromMessageId = 0, int limit = 50)
     {

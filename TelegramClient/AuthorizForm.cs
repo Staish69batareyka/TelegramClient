@@ -8,12 +8,12 @@ public partial class AuthorizForm : Form
         private Client _tg;
         public Client Client => _tg;
         
-        private TextBox txtPhone;
-        private Button btnStartAuth;
-        private TextBox txtCode;
-        private Button btnFinishAuth;
-        private TextBox txtPassword;
-        private Button btnPassword;
+        private TextBox _txtPhone;
+        private Button _btnStartAuth;
+        private TextBox _txtCode;
+        private Button _btnFinishAuth;
+        private TextBox _txtPassword;
+        private Button _btnPassword;
 
         public AuthorizForm()
         {
@@ -23,10 +23,10 @@ public partial class AuthorizForm : Form
             _tg.AuthCodeNeeded += () => MessageBox.Show("Введите код");
             _tg.PasswordNeeded += () =>
             {
-                txtPassword.Enabled = true;
-                btnPassword.Enabled = true;
-                txtPassword.Visible = true;
-                btnPassword.Visible = true;
+                _txtPassword!.Enabled = true;
+                _btnPassword!.Enabled = true;
+                _txtPassword.Visible = true;
+                _btnPassword.Visible = true;
                 MessageBox.Show("Введите пароль (2FA)");
             };
             _tg.Ready += async () =>
@@ -41,14 +41,14 @@ public partial class AuthorizForm : Form
         // Кнопка подтверждения телефона
         private async void btnStartAuth_Click(object sender, EventArgs e)
         {
-            string phone = txtPhone.Text.Trim();
+            string phone = _txtPhone.Text.Trim();
             await _tg.StartAsync(phone);
         }
 
         // кнопка подтверждения кода подтверждения
         private async void btnFinishAuth_Click(object sender, EventArgs e)
         {
-            string code = txtCode.Text.Trim();
+            string code = _txtCode.Text.Trim();
             if (string.IsNullOrEmpty(code))
             {
                 MessageBox.Show("Введите код подтверждения.");
@@ -68,7 +68,7 @@ public partial class AuthorizForm : Form
         // Кнопка подтверждения пароля
         private async void btnPassword_Click(object sender, EventArgs e)
         {
-            string password = txtPassword.Text.Trim();
+            string password = _txtPassword.Text.Trim();
             
             if (string.IsNullOrEmpty(password))
             {

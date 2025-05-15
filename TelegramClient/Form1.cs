@@ -2,251 +2,245 @@ using MyTgClient;
 using TdLib;
 
 
-namespace TelegramClient
+namespace TelegramClient;
+
+public partial class Form1 : Form
 {
-    
-    public partial class Form1 : Form
+    private readonly Client _tg;
+    private List<TdApi.Chat> _chats = new();
+    private TdApi.Chat? _selectedChat;
+
+
+    private ListView _lstChats;
+    private TextBox _txtMessage;
+    private Button _btnSend;
+    private TextBox _txtHistory;
+    private NotifyIcon _notifyIcon;
+    private ProgressBar _progressBar;
+
+    public Form1(Client client)
     {
-        private readonly Client _tg;
-        private List<TdApi.Chat> _chats = new();
-        private TdApi.Chat? _selectedChat;
+        InitializeComponent();
+        _tg = client;
 
+        _lstChats.SelectedIndexChanged += lstChats_SelectedIndexChanged;
 
-        
-        private ListView lstChats;
-        private TextBox txtMessage;
-        private Button btnSend;
-        private TextBox txtHistory;
-        private NotifyIcon notifyIcon;
-        private ProgressBar progressBar;
-        
-        public Form1(Client client)
+        // Реализация подписки на историю и уведомления
+        _tg.NewMessageReceived += async message =>
         {
-            InitializeComponent();
-            _tg = client;   
-            
-            lstChats.SelectedIndexChanged += lstChats_SelectedIndexChanged;
-            
-            // Реализация подписки на историю и уведомления
-            _tg.NewMessageReceived += async message =>
+            try
+            {
+                await SafeInvokeAsync(async () =>
+                {
+                    if (_selectedChat != null && message.ChatId == _selectedChat.Id)
+                    {
+                        await LoadChatHistoryAsync(_selectedChat.Id);
+                    }
+
+                    // Показываем уведомление, если окно не в фокусе или свёрнуто
+                    if (!this.Focused || this.WindowState == FormWindowState.Minimized)
+                    {
+                        string sender = message.SenderId is TdApi.MessageSender.MessageSenderUser user
+                            ? $"User {user.UserId}"
+                            : "System";
+
+                        if (message.Content is TdApi.MessageContent.MessageText text)
+                        {
+                            ShowTrayNotification($"{sender}: {text.Text.Text}");
+                        }
+                        else
+                        {
+                            ShowTrayNotification($"{sender}: новое сообщение");
+                        }
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка уведомления: " + ex.Message);
+            }
+        };
+
+        LoadChatsAsync();
+    }
+
+
+    // Функция для показа уведомления
+    void ShowTrayNotification(string message)
+    {
+        if (_notifyIcon == null) return;
+
+        _notifyIcon.BalloonTipTitle = "Новое сообщение";
+        _notifyIcon.BalloonTipText = message + " ";
+        _notifyIcon.BalloonTipIcon = ToolTipIcon.Info;
+        _notifyIcon.BalloonTipTitle = "Тест уведомления";
+        _notifyIcon.BalloonTipText = "Это уведомление должно появиться";
+        _notifyIcon.ShowBalloonTip(5000);
+    }
+
+    // Функция обеспечения безопасности потоков
+    private Task SafeInvokeAsync(Func<Task> action)
+    {
+        if (InvokeRequired)
+        {
+            var tcs = new TaskCompletionSource<object?>();
+
+            BeginInvoke(async () =>
             {
                 try
                 {
-                    await SafeInvokeAsync(async () =>
-                    {
-                        if (_selectedChat != null && message.ChatId == _selectedChat.Id)
-                        {
-                            await LoadChatHistoryAsync(_selectedChat.Id);
-                        }
-
-                        // Показываем уведомление, если окно не в фокусе или свёрнуто
-                        if (!this.Focused || this.WindowState == FormWindowState.Minimized)
-                        {
-                            string sender = message.SenderId is TdApi.MessageSender.MessageSenderUser user
-                                ? $"User {user.UserId}"
-                                : "System";
-
-                            if (message.Content is TdApi.MessageContent.MessageText text)
-                            {
-                                ShowTrayNotification($"{sender}: {text.Text.Text}");
-                            }
-                            else
-                            {
-                                ShowTrayNotification($"{sender}: новое сообщение");
-                            }
-                        }
-                    }); 
+                    await action();
+                    tcs.SetResult(null);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Ошибка уведомления: " + ex.Message);
+                    tcs.SetException(ex);
                 }
-                
-            };
+            });
 
-            LoadChatsAsync();
-
+            return tcs.Task;
         }
-        
-        
-        // Функция для показа уведомления
-        void ShowTrayNotification(string message)
+        else
         {
-            if (notifyIcon == null) return;
-            
-            notifyIcon.BalloonTipTitle = "Новое сообщение";
-            notifyIcon.BalloonTipText = message + " ";
-            notifyIcon.BalloonTipIcon = ToolTipIcon.Info;
-            notifyIcon.BalloonTipTitle = "Тест уведомления";
-            notifyIcon.BalloonTipText = "Это уведомление должно появиться";
-            notifyIcon.ShowBalloonTip(5000);
+            return action();
         }
-        
-        // Функция обеспечения безопасности потоков
-        private Task SafeInvokeAsync(Func<Task> action)
+    }
+
+
+    // Подгрузка чатов
+    private async Task LoadChatsAsync()
+    {
+        var chats = await _tg.GetChatsAsync();
+        if (chats == null) return;
+
+        _chats = chats;
+        _lstChats.Items.Clear();
+
+        foreach (var chat in _chats)
         {
-            if (InvokeRequired)
-            {
-                var tcs = new TaskCompletionSource<object?>();
-
-                BeginInvoke(async () =>
-                {
-                    try
-                    {
-                        await action();
-                        tcs.SetResult(null);
-                    }
-                    catch (Exception ex)
-                    {
-                        tcs.SetException(ex);
-                    }
-                });
-
-                return tcs.Task;
-            }
-            else
-            {
-                return action();
-            }
+            _lstChats.Items.Add(chat.Title);
         }
+    }
 
-        
-        // Подгрузка чатов
-        private async Task LoadChatsAsync()
+    // Очистка NotifyIcon при закрытии формы
+    protected override void OnFormClosed(FormClosedEventArgs e)
+    {
+        _notifyIcon.Dispose();
+        base.OnFormClosed(e);
+    }
+
+
+    // Проверка формата
+    private string FormatMessage(TdApi.Message message)
+    {
+        return message.Content switch
         {
-            var chats = await _tg.GetChatsAsync();
-            if (chats == null) return;
+            TdApi.MessageContent.MessageText text =>
+                $"{text.Text.Text}",
 
-            _chats = chats;
-            lstChats.Items.Clear();
+            TdApi.MessageContent.MessageDocument doc =>
+                $"📄 Документ: {doc.Document.FileName} ({doc.Document.Document_.ExpectedSize})",
 
-            foreach (var chat in _chats)
-            {
-                lstChats.Items.Add(chat.Title);
-            }
+            TdApi.MessageContent.MessagePhoto photo =>
+                $"📷 Фото ({photo.Photo.Sizes.Last().Photo.Id})",
+
+            TdApi.MessageContent.MessageVideo video =>
+                $"🎥 Видео ({video.Video.Duration} сек)",
+
+            _ => $" [неподдерживаемый тип сообщения]"
+        };
+    }
+
+
+    // Функция прогрузки истории
+    private async Task LoadChatHistoryAsync(long chatId, long fromMessageId = 0, int limit = 50)
+    {
+        var history = await _tg.GetChatHistoryAsync(chatId, fromMessageId, limit);
+
+        if (history == null) return;
+
+        _txtHistory.Clear();
+
+        // Сообщения идут в обратном порядке, от старых к новым
+        foreach (var msg in history.Reverse())
+        {
+            string displayText = FormatMessage(msg);
+            string sender = msg.SenderId is TdApi.MessageSender.MessageSenderUser user
+                ? $"User {user.UserId}"
+                : "System";
+
+            _txtHistory.AppendText($"{sender}: {displayText}\r\n");
         }
+    }
 
-        // Очистка NotifyIcon при закрытии формы
-        protected override void OnFormClosed(FormClosedEventArgs e)
+
+    // Кнопка отправления сообщения
+    private async void btnSend_Click(object sender, EventArgs e)
+    {
+        string message = _txtMessage.Text.Trim();
+        if (_selectedChat == null || string.IsNullOrEmpty(message))
         {
-            notifyIcon.Dispose();
-            base.OnFormClosed(e);
-        }
-        
-        
-        // Проверка формата
-        private string FormatMessage(TdApi.Message message)
-        {
-
-            return message.Content switch
-            {
-                TdApi.MessageContent.MessageText text =>
-                    $"{text.Text.Text}",
-
-                TdApi.MessageContent.MessageDocument doc =>
-                    $"📄 Документ: {doc.Document.FileName} ({doc.Document.Document_.ExpectedSize})",
-
-                TdApi.MessageContent.MessagePhoto photo =>
-                    $"📷 Фото ({photo.Photo.Sizes.Last().Photo.Id})",
-
-                TdApi.MessageContent.MessageVideo video =>
-                    $"🎥 Видео ({video.Video.Duration} сек)",
-
-                _ => $" [неподдерживаемый тип сообщения]"
-            };
-        }
-        
-        
-        // Функция прогрузки истории
-        private async Task LoadChatHistoryAsync(long chatId, long fromMessageId = 0, int limit = 50)
-        {
-            var history = await _tg.GetChatHistoryAsync(chatId, fromMessageId, limit);
-
-            if (history == null) return;
-
-            txtHistory.Clear();
-
-            // Сообщения идут в обратном порядке, от старых к новым
-            foreach (var msg in history.Reverse())
-            {
-                string displayText = FormatMessage(msg);
-                string sender = msg.SenderId is TdApi.MessageSender.MessageSenderUser user
-                    ? $"User {user.UserId}"
-                    : "System";
-
-                txtHistory.AppendText($"{sender}: {displayText}\r\n");
-            }
-
+            MessageBox.Show("Выберите чат и введите сообщение.");
+            return;
         }
 
+        await _tg.SendMessageAsync(_selectedChat.Id, message);
+        _txtMessage.Clear();
+    }
 
-        // Кнопка отправления сообщения
-        private async void btnSend_Click(object sender, EventArgs e)
+
+    // Выбор чата из списка
+    private async void lstChats_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        int index = _lstChats.SelectedIndices[0];
+
+        if (index >= 0 && index < _chats.Count)
         {
-            string message = txtMessage.Text.Trim();
-            if (_selectedChat == null || string.IsNullOrEmpty(message))
-            {
-                MessageBox.Show("Выберите чат и введите сообщение.");
-                return;
-            }
-
-            await _tg.SendMessageAsync(_selectedChat.Id, message);
-            txtMessage.Clear();
+            _selectedChat = _chats[index];
+            _txtHistory.Clear();
+            _tg.SetCurrentChatId(_selectedChat.Id);
+            await LoadChatHistoryAsync(_selectedChat.Id);
         }
-        
-        
-        
-        // Выбор чата из списка
-        private async void lstChats_SelectedIndexChanged(object sender, EventArgs e)
+    }
+
+
+    private void Form1_DragEnter(object sender, DragEventArgs e)
+    {
+        if (e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop))
+            e.Effect = DragDropEffects.Copy;
+        else
+            e.Effect = DragDropEffects.None;
+    }
+
+    private void ShowUploadProgress()
+    {
+        _progressBar.Visible = true;
+    }
+
+    private void HideUploadProgress()
+    {
+        _progressBar.Visible = false;
+    }
+
+    private async void Form1_DragDrop(object sender, DragEventArgs e)
+    {
+        if (e.Data == null)
+            return;
+
+        string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+        if (files.Length > 0)
         {
-            int index = lstChats.SelectedIndices[0];
-            
+            string filePath = files[0]; // можно расширить до нескольких
+            ShowUploadProgress(); //  отображаем прогресс
+
+            int index = _lstChats.SelectedIndices[0];
             if (index >= 0 && index < _chats.Count)
             {
                 _selectedChat = _chats[index];
-                txtHistory.Clear();
-                _tg.SetCurrentChatId(_selectedChat.Id); 
-                await LoadChatHistoryAsync(_selectedChat.Id);
-           }
-            
-        }
-        
-        
-        private void Form1_DragEnter(object sender, DragEventArgs e)
-        {
-            if (e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop))
-                e.Effect = DragDropEffects.Copy;
-            else
-                e.Effect = DragDropEffects.None;
-        }
-        private void ShowUploadProgress()
-        {
-            progressBar.Visible = true;
-        }
-        private void HideUploadProgress()
-        {
-            progressBar.Visible = false;
-        }
-        private async void Form1_DragDrop(object sender, DragEventArgs e)
-        {
-            if (e.Data == null)
-                return;
-
-            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            if (files.Length > 0)
-            {
-                string filePath = files[0]; // можно расширить до нескольких
-                ShowUploadProgress(); //  отображаем прогресс
-                
-                int index = lstChats.SelectedIndices[0];
-                if (index >= 0 && index < _chats.Count)
-                {
-                    _selectedChat = _chats[index];
-                    await _tg.SendFileAsync(_selectedChat.Id, filePath, "📎 Файл");
-                }
-
-                HideUploadProgress(); // убираем прогресс
+                await _tg.SendFileAsync(_selectedChat.Id, filePath, "📎 Файл");
             }
+
+            HideUploadProgress(); // убираем прогресс
         }
     }
 }
