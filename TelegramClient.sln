@@ -2,8 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TelegramClient", "TelegramClient\TelegramClient.csproj", "{7D53AAFB-BEDF-4DBF-8813-E8D68CAD28D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TDLib", "TDLib\TDLib.csproj", "{9DFA6029-2262-4718-9B8B-EA3379BE9104}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyTgClient", "MyTgClient\MyTgClient.csproj", "{227A3B75-65B4-4E7B-BE43-2453399DF16E}"
 EndProject
 Global
@@ -16,10 +14,6 @@ Global
 		{7D53AAFB-BEDF-4DBF-8813-E8D68CAD28D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7D53AAFB-BEDF-4DBF-8813-E8D68CAD28D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7D53AAFB-BEDF-4DBF-8813-E8D68CAD28D2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9DFA6029-2262-4718-9B8B-EA3379BE9104}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9DFA6029-2262-4718-9B8B-EA3379BE9104}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9DFA6029-2262-4718-9B8B-EA3379BE9104}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9DFA6029-2262-4718-9B8B-EA3379BE9104}.Release|Any CPU.Build.0 = Release|Any CPU
 		{227A3B75-65B4-4E7B-BE43-2453399DF16E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{227A3B75-65B4-4E7B-BE43-2453399DF16E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{227A3B75-65B4-4E7B-BE43-2453399DF16E}.Release|Any CPU.ActiveCfg = Release|Any CPU
