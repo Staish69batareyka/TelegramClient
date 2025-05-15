@@ -7,16 +7,11 @@ namespace TelegramClient
     
     public partial class Form1 : Form
     {
-        private Client _tg;
+        private readonly Client _tg;
         private List<TdApi.Chat> _chats = new();
         private TdApi.Chat? _selectedChat;
 
-        private TextBox txtPhone;
-        private Button btnStartAuth;
-        private TextBox txtCode;
-        private Button btnFinishAuth;
-        private TextBox txtPassword;
-        private Button btnPassword;
+
         
         private ListView lstChats;
         private TextBox txtMessage;
@@ -25,79 +20,11 @@ namespace TelegramClient
         private NotifyIcon notifyIcon;
         private ProgressBar progressBar;
         
-        
-
-        // Функция для показа уведомления
-        void ShowTrayNotification(string message)
-        {
-            if (notifyIcon == null) return;
-            
-            notifyIcon.BalloonTipTitle = "Новое сообщение";
-            notifyIcon.BalloonTipText = message + " ";
-            notifyIcon.BalloonTipIcon = ToolTipIcon.Info;
-            notifyIcon.BalloonTipTitle = "Тест уведомления";
-            notifyIcon.BalloonTipText = "Это уведомление должно появиться";
-            notifyIcon.ShowBalloonTip(5000);
-        }
-        
-
-        // private Task InvokeAsync(Func<Task> func)
-        // {
-        //     return InvokeRequired
-        //         ? Invoke(func)
-        //         : func();
-        // }
-        private Task SafeInvokeAsync(Func<Task> action)
-        {
-            if (InvokeRequired)
-            {
-                var tcs = new TaskCompletionSource<object?>();
-
-                BeginInvoke(async () =>
-                {
-                    try
-                    {
-                        await action();
-                        tcs.SetResult(null);
-                    }
-                    catch (Exception ex)
-                    {
-                        tcs.SetException(ex);
-                    }
-                });
-
-                return tcs.Task;
-            }
-            else
-            {
-                return action();
-            }
-        }
-
-        public Form1()
+        public Form1(Client client)
         {
             InitializeComponent();
-            _tg = new Client();
-            _tg.AuthCodeNeeded += () => MessageBox.Show("Введите код");
-            _tg.PasswordNeeded += () =>
-            {
-                txtPassword.Enabled = true;
-                btnPassword.Enabled = true;
-                txtPassword.Visible = true;
-                btnPassword.Visible = true;
-                MessageBox.Show("Введите пароль (2FA)");
-            };
-            _tg.Ready += async () =>
-            {
-                MessageBox.Show("Успешная авторизация!");
-                _chats = await _tg.GetChatsAsync();
-                lstChats.Items.Clear(); 
-                foreach (var chat in _chats)
-                {
-                    lstChats.Items.Add($"{chat.Title}");
-                }
-                
-            };
+            _tg = client;   
+            
             lstChats.SelectedIndexChanged += lstChats_SelectedIndexChanged;
             
             // Реализация подписки на историю и уведомления
@@ -136,10 +63,69 @@ namespace TelegramClient
                 }
                 
             };
-            
+
+            LoadChatsAsync();
+
         }
         
         
+        // Функция для показа уведомления
+        void ShowTrayNotification(string message)
+        {
+            if (notifyIcon == null) return;
+            
+            notifyIcon.BalloonTipTitle = "Новое сообщение";
+            notifyIcon.BalloonTipText = message + " ";
+            notifyIcon.BalloonTipIcon = ToolTipIcon.Info;
+            notifyIcon.BalloonTipTitle = "Тест уведомления";
+            notifyIcon.BalloonTipText = "Это уведомление должно появиться";
+            notifyIcon.ShowBalloonTip(5000);
+        }
+        
+        // Функция обеспечения безопасности потоков
+        private Task SafeInvokeAsync(Func<Task> action)
+        {
+            if (InvokeRequired)
+            {
+                var tcs = new TaskCompletionSource<object?>();
+
+                BeginInvoke(async () =>
+                {
+                    try
+                    {
+                        await action();
+                        tcs.SetResult(null);
+                    }
+                    catch (Exception ex)
+                    {
+                        tcs.SetException(ex);
+                    }
+                });
+
+                return tcs.Task;
+            }
+            else
+            {
+                return action();
+            }
+        }
+
+        
+        // Подгрузка чатов
+        private async Task LoadChatsAsync()
+        {
+            var chats = await _tg.GetChatsAsync();
+            if (chats == null) return;
+
+            _chats = chats;
+            lstChats.Items.Clear();
+
+            foreach (var chat in _chats)
+            {
+                lstChats.Items.Add(chat.Title);
+            }
+        }
+
         // Очистка NotifyIcon при закрытии формы
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
@@ -148,8 +134,7 @@ namespace TelegramClient
         }
         
         
-        
-        
+        // Проверка формата
         private string FormatMessage(TdApi.Message message)
         {
 
@@ -193,56 +178,7 @@ namespace TelegramClient
             }
 
         }
-        
-        
-        // Кнопки
-        
-        // Кнопка подтверждения телефона
-        private async void btnStartAuth_Click(object sender, EventArgs e)
-        {
-            string phone = txtPhone.Text.Trim();
-            await _tg.StartAsync(phone);
-        }
 
-        // кнопка подтверждения кода подтверждения
-        private async void btnFinishAuth_Click(object sender, EventArgs e)
-        {
-            string code = txtCode.Text.Trim();
-            if (string.IsNullOrEmpty(code))
-            {
-                MessageBox.Show("Введите код подтверждения.");
-                return;
-            }
-
-            try
-            {
-                await _tg.SubmitCodeAsync(code);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка при вводе кода: {ex.Message}");
-            }
-        }
-        
-        // Кнопка подтверждения паспорта
-        private async void btnPassword_Click(object sender, EventArgs e)
-        {
-            string password = txtPassword.Text.Trim();
-            
-            if (string.IsNullOrEmpty(password))
-            {
-                MessageBox.Show("Пароль не может быть пустым.");
-                return;
-            }
-            try
-            {
-                await _tg.SubmitPasswordAsync(password);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка при вводе пароля: {ex.Message}");
-            }
-        }
 
         // Кнопка отправления сообщения
         private async void btnSend_Click(object sender, EventArgs e)
@@ -274,6 +210,8 @@ namespace TelegramClient
            }
             
         }
+        
+        
         private void Form1_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -285,13 +223,10 @@ namespace TelegramClient
         {
             progressBar.Visible = true;
         }
-
         private void HideUploadProgress()
         {
             progressBar.Visible = false;
         }
-
-
         private async void Form1_DragDrop(object sender, DragEventArgs e)
         {
             if (e.Data == null)
@@ -313,8 +248,5 @@ namespace TelegramClient
                 HideUploadProgress(); // убираем прогресс
             }
         }
-        
-        
-
     }
 }

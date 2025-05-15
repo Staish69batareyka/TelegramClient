@@ -1,16 +1,23 @@
-namespace TelegramClient;
+using System;
+using System.Windows.Forms;
+using TelegramClient;
 
 static class Program
 {
-    /// <summary>
-    ///  The main entry point for the application.
-    /// </summary>
     [STAThread]
     static void Main()
     {
-        // To customize application configuration such as set high DPI settings or default font,
-        // see https://aka.ms/applicationconfiguration.
-        ApplicationConfiguration.Initialize();
-        Application.Run(new Form1());
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(false);
+
+        using (var loginForm = new AuthorizForm())
+        {
+            var result = loginForm.ShowDialog();
+
+            if (result == DialogResult.OK)
+            {
+                Application.Run(new Form1(loginForm.Client)); // передаём авторизованный Client
+            }
+        }
     }
 }

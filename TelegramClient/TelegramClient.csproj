@@ -16,5 +16,11 @@
     <ItemGroup>
       <ProjectReference Include="..\MyTgClient\MyTgClient.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="AuthorizForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+    </ItemGroup>
     
 </Project>
