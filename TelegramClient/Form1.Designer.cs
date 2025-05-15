@@ -16,10 +16,26 @@ private void InitializeComponent()
     this.btnSend = new Button();
     this.txtHistory = new TextBox();
     this.notifyIcon = new System.Windows.Forms.NotifyIcon();
+    this.progressBar = new ProgressBar();
 
+    // Стили
     var telegramBlue = Color.FromArgb(42, 171, 238);
     var telegramGray = Color.FromArgb(245, 245, 245);
     var font = new Font("Segoe UI", 10F);
+    
+    
+    // Подключаем drag-and-drop
+    this.AllowDrop = true;
+    this.DragEnter += Form1_DragEnter;
+    this.DragDrop += Form1_DragDrop;
+    
+    
+    //Индикатор процесса загрузки файла
+    
+    this.progressBar.Style = ProgressBarStyle.Marquee;
+    this.progressBar.Visible = false;
+    this.progressBar.Dock = DockStyle.Bottom;
+    this.Controls.Add(progressBar);
 
     // notifyIcon
     this.notifyIcon.Icon = SystemIcons.Information;

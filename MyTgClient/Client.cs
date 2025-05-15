@@ -25,22 +25,24 @@ public class Client
     {
         _phoneNumber = phone;
 
-        await _client.ExecuteAsync(new TdApi.SetTdlibParameters
+        await Task.Run(async () =>
         {
-            ApiId = 23613057,
-            ApiHash = "a0fc7ea7c76b14a6af35f854bf85ac8a",
-            SystemLanguageCode = "en",
-            DeviceModel = "PC",
-            ApplicationVersion = "1.0",
-            UseMessageDatabase = true,
-            UseSecretChats = false,
-            FilesDirectory = "tdlib_files",
-            DatabaseDirectory = "tdlib_db"
-        });
-
-        await _client.ExecuteAsync(new TdApi.SetDatabaseEncryptionKey
-        {
-            NewEncryptionKey = new byte[] { } 
+            await _client.ExecuteAsync(new TdApi.SetTdlibParameters
+            {
+                ApiId = 23613057,
+                ApiHash = "a0fc7ea7c76b14a6af35f854bf85ac8a",
+                SystemLanguageCode = "en", 
+                DeviceModel = "PC", 
+                ApplicationVersion = "1.0",
+                UseMessageDatabase = true,
+                UseSecretChats = false,
+                FilesDirectory = "tdlib_files",
+                DatabaseDirectory = "tdlib_db"
+            });
+            await _client.ExecuteAsync(new TdApi.SetDatabaseEncryptionKey
+            {
+                NewEncryptionKey = new byte[] { } 
+            });
         });
     }
 
@@ -142,6 +144,34 @@ public class Client
             }
         });
     }
+   
+    public async Task SendFileAsync(long chatId, string filePath, string caption = "")
+    {
+        // Загрузка файла
+        var inputFile = new TdApi.InputFile.InputFileLocal
+        {
+            Path = filePath
+        };
+
+        var documentContent = new TdApi.InputMessageContent.InputMessageDocument
+        {
+            Document = inputFile,
+            Caption = new TdApi.FormattedText
+            {
+                Text = caption
+            }
+        };
+
+        await _client.ExecuteAsync(new TdApi.SendMessage
+        {
+            ChatId = chatId,
+            InputMessageContent = documentContent
+        });
+    }
+
+
+
+    
 
     public async Task<TdApi.Message[]> GetChatHistoryAsync(long chatId, long fromMessageId = 0, int limit = 50)
     {
@@ -156,4 +186,7 @@ public class Client
 
         return (response as TdApi.Messages)?.Messages_ ?? Array.Empty<TdApi.Message>();
     }
+    
+    
+    
 }
